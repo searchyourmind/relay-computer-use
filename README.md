@@ -11,10 +11,24 @@ The demonstration contains invented records only. It connects to no real bank
 and requires no credentials. The project supports real model discovery, saved
 capabilities, and model-free replay.
 
-**[Open the live demo](https://relay-production-ff74.up.railway.app/configure)**
+**[Open the Lovable frontend](https://relay-computer-use.lovable.app/configure)**
+· [Original Railway console](https://relay-production-ff74.up.railway.app/configure)
+
+The new frontend uses React and TanStack Start on Lovable. Its same-origin
+server function signs a restricted set of API requests to the Railway backend.
+Python, Playwright/Chromium, the synthetic bank and private Ollama inference
+remain in the two Railway Docker services. This demo has no database: visitor
+workspaces and run ownership live in the console process's memory and reset on
+restart. The two frontends give visitors separate workspaces.
+
+This repository contains the Python backend, original console and deployment
+configuration. The new frontend and its server proxy are maintained in the
+[Lovable project](https://lovable.dev/projects/1c026fe0-2bd2-45da-b329-833186b60965),
+not in this repository. See the [bridge deployment notes](deploy/README.md#optional-lovable-frontend-and-server-proxy)
+for the integration contract.
 
 Try **Discover** with member `1001`, then **Replay** with member `1002`.
-**Practice a handoff** and **Handle a missing member** exercise recovery and business outcomes. Each visitor
+The **Session handoff** and **Missing member** presets exercise recovery and business outcomes. Each visitor
 gets a separate temporary workspace and browser session. The hosted service uses
 synthetic members only, allows one active run globally, and bounds each run to
 three minutes (90 seconds for operator intervention). Runs expire on restart;

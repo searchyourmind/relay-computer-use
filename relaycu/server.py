@@ -38,6 +38,15 @@ FIXED_GOAL = "Find the current savings balance for the supplied member."
 COOKIE_NAME = "__Host-relay_session"
 COOKIE_SECONDS = 8 * 60 * 60
 SESSION_SECRET = secrets.token_bytes(32)
+# Only a trusted server-side proxy receives this key. Browser clients keep an
+# independent random capability token; the proxy hashes it into the visitor ID.
+BRIDGE_SECRET = os.getenv("RELAY_BRIDGE_SECRET", "").encode("utf-8")
+BRIDGE_HEADERS = {"x-relay-visitor", "x-relay-timestamp", "x-relay-nonce", "x-relay-signature"}
+BRIDGE_CLOCK_SECONDS = 30
+BRIDGE_NONCE_SECONDS = 61  # Covers the full +/-30 second acceptance window.
+BRIDGE_NONCE_LIMIT = 4096
+BRIDGE_BODY_BYTES = 16 * 1024
+BRIDGE_NONCES: dict[str, float] = {}
 RUN_OWNERS: dict[str, str] = {}
 START_TIMES: dict[str, deque] = {}
 GLOBAL_START_TIMES: deque = deque()
@@ -98,6 +107,76 @@ def validate_session(token: str | None) -> str | None:
     return nonce if hmac.compare_digest(expected, signature) else None
 
 
+def bridge_route(method: str, path: str) -> bool:
+    """The proxy is an API bridge, never a generic origin bypass."""
+    if method == "GET":
+        return path in {"/api/config", "/api/workspace", "/api/capability"} or bool(
+            re.fullmatch(r"/api/runs/[0-9a-f]{32}", path)
+        )
+    return method == "POST" and (path == "/api/runs" or bool(
+        re.fullmatch(r"/api/runs/[0-9a-f]{32}/(?:claim|operator|resume|abort)", path)
+    ))
+
+
+async def bridge_visitor(request: Request) -> str | None:
+    """Authenticate a single-use, body-bound server-to-server request.
+
+    Wire signature: HMAC-SHA256(key, timestamp + '\\n' + nonce + '\\n' +
+    visitor + '\\n' + METHOD + '\\n' + path + '\\n' + sha256(raw_body)).
+    All digests are lowercase hex. Query strings and encoded paths are rejected.
+    A bridge visitor is namespaced separately from first-party cookie sessions.
+    """
+    if not HOSTED or len(BRIDGE_SECRET) < 32:
+        return None
+    supplied = [key.decode("latin-1").lower() for key, _ in request.scope["headers"]
+                if key.lower().startswith(b"x-relay-")]
+    if len(supplied) != len(BRIDGE_HEADERS) or set(supplied) != BRIDGE_HEADERS:
+        return None
+    visitor = request.headers["x-relay-visitor"]
+    timestamp = request.headers["x-relay-timestamp"]
+    nonce = request.headers["x-relay-nonce"]
+    signature = request.headers["x-relay-signature"]
+    if not (re.fullmatch(r"[0-9a-f]{64}", visitor)
+            and re.fullmatch(r"[1-9][0-9]{0,11}", timestamp)
+            and re.fullmatch(r"[0-9a-f]{32}", nonce)
+            and re.fullmatch(r"[0-9a-f]{64}", signature)):
+        return None
+    path = request.url.path
+    if (not bridge_route(request.method, path) or request.scope.get("query_string")
+            or request.scope.get("raw_path", b"") != path.encode("ascii", errors="replace")
+            or abs(time.time() - int(timestamp)) > BRIDGE_CLOCK_SECONDS):
+        return None
+    length = request.headers.get("content-length")
+    if length is not None and (len(length) > 6 or not length.isdigit() or int(length) > BRIDGE_BODY_BYTES):
+        return None
+    body = bytearray()
+    async for chunk in request.stream():
+        if len(body) + len(chunk) > BRIDGE_BODY_BYTES:
+            return None
+        body.extend(chunk)
+    # BaseHTTPMiddleware's cached request replays _body to the downstream app;
+    # retain these exact bytes after the bounded streaming authentication read.
+    request._body = bytes(body)
+    message = "\n".join((timestamp, nonce, visitor, request.method, path,
+                          hashlib.sha256(body).hexdigest()))
+    expected = hmac.new(BRIDGE_SECRET, message.encode("utf-8"), hashlib.sha256).hexdigest()
+    # Reading a slow/chunked body can cross both the signature window and a
+    # prior nonce's retention period. Recheck freshness before nonce eviction.
+    if (not hmac.compare_digest(expected, signature)
+            or abs(time.time() - int(timestamp)) > BRIDGE_CLOCK_SECONDS):
+        return None
+    now = time.monotonic()
+    for used, expiry in list(BRIDGE_NONCES.items()):
+        if expiry <= now:
+            del BRIDGE_NONCES[used]
+    if nonce in BRIDGE_NONCES or len(BRIDGE_NONCES) >= BRIDGE_NONCE_LIMIT:
+        return None
+    # There is no await between checking and reserving the nonce. This process
+    # already runs one web worker for its visitor state and browser budget.
+    BRIDGE_NONCES[nonce] = now + BRIDGE_NONCE_SECONDS
+    return f"bridge:{visitor}"
+
+
 @app.middleware("http")
 async def loopback_boundary(request: Request, call_next):
     host = request.headers.get("host", "").lower()
@@ -112,16 +191,22 @@ async def loopback_boundary(request: Request, call_next):
         if host not in {"127.0.0.1:4310", "localhost:4310", "testserver"}:
             return JSONResponse({"detail": "Invalid console host"}, status_code=403)
         allowed_origins = {"http://127.0.0.1:4310", "http://localhost:4310"}
+    has_bridge_headers = any(name.lower().startswith("x-relay-") for name in request.headers)
+    trusted_visitor = await bridge_visitor(request) if has_bridge_headers else None
+    if has_bridge_headers and trusted_visitor is None:
+        # A malformed bridge request must never acquire a new cookie identity or
+        # inherit an existing cookie session after a failed authentication.
+        return JSONResponse({"detail": "Invalid bridge request"}, status_code=403)
     origin = request.headers.get("origin")
-    if (origin is not None and origin not in allowed_origins) or (
+    if trusted_visitor is None and ((origin is not None and origin not in allowed_origins) or (
         HOSTED and request.method not in {"GET", "HEAD", "OPTIONS"} and origin is None
-    ):
+    )):
         return JSONResponse({"detail": "Cross-origin operator requests are forbidden"}, status_code=403)
-    if HOSTED and request.method not in {"GET", "HEAD", "OPTIONS"} and request.headers.get("sec-fetch-site") == "cross-site":
+    if trusted_visitor is None and HOSTED and request.method not in {"GET", "HEAD", "OPTIONS"} and request.headers.get("sec-fetch-site") == "cross-site":
         return JSONResponse({"detail": "Cross-site console requests are forbidden"}, status_code=403)
     new_cookie = None
-    request.state.visitor = None
-    if HOSTED and request.url.path != "/api/health":
+    request.state.visitor = trusted_visitor
+    if HOSTED and trusted_visitor is None and request.url.path != "/api/health":
         visitor = validate_session(request.cookies.get(COOKIE_NAME))
         if visitor is None:
             visitor, new_cookie = session_token()

@@ -1,0 +1,50 @@
+{
+  "verified_on": "2026-09-22",
+  "url": "https://relay-computer-use.lovable.app/configure",
+  "method": "Browser interaction with the published Lovable site; observed rendered run state and event trail",
+  "discovery": {
+    "run_id": "74d54172985a412285c3391b6a9876eb",
+    "session_id": "d4a2c85e0fe2442e8615ffc51dd6436c",
+    "status": "success",
+    "code": "verified",
+    "model_calls": 5,
+    "completed_actions": 5,
+    "finished_at": "2026-09-22T22:34:37.060499+00:00",
+    "workflow_provenance": "discovery",
+    "output": "Verified on screen; value not persisted"
+  },
+  "replay_and_handoff": {
+    "run_id": "6397eeef6f1c47f0bc0d6ad8dca84670",
+    "session_id": "a352d6dad6784924abcdaafa85a65f06",
+    "status": "success",
+    "code": "verified",
+    "model_calls": 0,
+    "completed_actions": 5,
+    "handoffs": 1,
+    "different_synthetic_member": true,
+    "same_session_across_claim_activity_navigation_reload_restore_resume": true,
+    "operator": "Coding assistant using the application's visible handoff controls",
+    "finished_at": "2026-09-22T22:35:38.749112+00:00",
+    "output": "Verified on screen; value not persisted"
+  },
+  "missing_member": {
+    "run_id": "ff799f5cae07475d92b38cf50e4822c8",
+    "status": "business_outcome",
+    "code": "not_found",
+    "model_calls": 0,
+    "completed_actions": 2,
+    "remaining_steps_not_marked_done": true,
+    "finished_at": "2026-09-22T22:35:53.279831+00:00"
+  },
+  "activity_filter": "action_completed showed the two actual completed actions of the missing-member run",
+  "unknown_run": "404 displayed recovery action, which returned to configuration without reselecting the missing run",
+  "new_browser_session": "Empty run history and example workflow provenance",
+  "browser_console_errors": 0,
+  "responsive_checks": {
+    "desktop_width": 1440,
+    "mobile_width": 390,
+    "mobile_document_overflow": false,
+    "checked_mobile_pages": ["configure", "execution", "workflows"]
+  },
+  "scope": "A synthetic demonstration with process-local workspace state; this is an observation record, not raw backend API output"
+}

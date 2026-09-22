@@ -61,17 +61,40 @@ service is private; no scripted model-response fallback is used. Native HTML
 validity excludes form submissions the browser would currently block, without
 reading input values into evidence or prescribing a navigation plan.
 
+## Signed frontend bridge
+
+[`lovable-bridge/validation.json`](lovable-bridge/validation.json) records actual
+cloud API checks on September 22 through the new server-to-server signing path.
+Discovery completed five model calls; replay used that same capability with a
+different synthetic member and zero model calls. A session-expiry run was
+claimed, restored and resumed in the same browser session. A second visitor
+could neither read nor control the first visitor's runs. These are backend
+integration checks; they do not stand in for frontend UI verification.
+
 ## Automated verification
 
-The complete test suite passed **147 tests** on Python 3.14 / macOS ARM64.
+The complete test suite passed **194 tests** on Python 3.14 / macOS ARM64.
 It includes provider response validation, control-order invariance, real candidate binding, hosted visitor isolation and limits, independent page routes, redacted workspace history, corrupted capability handling, cancellation during model/browser awaits, richer snapshot privacy, real Chromium flows, missing/ambiguous controls, cross-origin and
 multi-hop redirects, popup/WebSocket restrictions, unexpected dialogs,
 same-session recovery, input and schema validation, forged completion,
-bounded retries/timeouts, and sensitive sentinel non-persistence. Two upstream
+bounded retries/timeouts, and sensitive sentinel non-persistence. The 47 bridge
+checks also cover signed body/path/method binding, visitor isolation, chunked
+bodies, nonce replay and requests that expire while their body is being read. Two upstream
 test-client deprecation warnings remain; there were no test failures.
 
 Unit-test planner doubles are confined to tests and are not the discovery
 evidence. Replay tests fail if a planner is constructed or called.
+
+## Published Lovable UI
+
+`lovable-bridge/public-ui.json` records checks performed through the published
+Lovable frontend. Real discovery completed five actions with five model calls;
+replay for a different synthetic member completed with zero calls after a
+same-session operator claim, page navigation, reload, restore and resume. A
+missing-member run correctly stopped after two actions with `business_outcome`,
+without marking the remaining steps complete. Event filtering, unknown-run
+recovery and mobile layout were also checked. Balances and visitor tokens are
+not included in this observation record.
 
 ## Reproduce
 

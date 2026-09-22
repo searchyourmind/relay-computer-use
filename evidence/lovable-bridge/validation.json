@@ -1,0 +1,63 @@
+{
+  "verified_at": "2026-09-22T20:46:58.614090+00:00",
+  "backend_deployment": "fcf460c2-e2d3-4583-8623-40248e901ee4",
+  "transport": "HMAC-signed server-to-server bridge",
+  "tests": 194,
+  "discovery": {
+    "run_id": "09a541c161ae4385aea88a12547bcc4e",
+    "mode": "discover",
+    "session_id": "71da7a2c2c294cf997ff368a5a00e776",
+    "status": "success",
+    "result": {
+      "status": "success",
+      "code": "verified",
+      "step": 5,
+      "outputs": {
+        "current_balance": "[verified; value not persisted]"
+      },
+      "model_calls": 5,
+      "recoveries": 0,
+      "handoffs": 0
+    },
+    "completed_actions": 5
+  },
+  "capability_sha256": "76633f3569bf97bd450d1bec9db600c9212bc9ff534fc9920933d6f303a1a1fb",
+  "visitor_isolation": true,
+  "replay": {
+    "run_id": "65d221052de24ba0956937db16378e70",
+    "mode": "replay",
+    "session_id": "f259c87ec1c3497897b52853ee0a712e",
+    "status": "success",
+    "result": {
+      "status": "success",
+      "code": "verified",
+      "step": 5,
+      "outputs": {
+        "current_balance": "[verified; value not persisted]"
+      },
+      "model_calls": 0,
+      "recoveries": 0,
+      "handoffs": 0
+    },
+    "completed_actions": 5
+  },
+  "handoff": {
+    "run_id": "a2430a91bfe54e2ab49d60d44ff425c4",
+    "mode": "replay",
+    "session_id": "b356264917ff44cbaca960e6d5ba3673",
+    "status": "success",
+    "result": {
+      "status": "success",
+      "code": "verified",
+      "step": 5,
+      "outputs": {
+        "current_balance": "[verified; value not persisted]"
+      },
+      "model_calls": 0,
+      "recoveries": 0,
+      "handoffs": 1
+    },
+    "completed_actions": 5
+  },
+  "same_session_handoff": true
+}
