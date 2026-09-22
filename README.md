@@ -8,21 +8,23 @@ The target uses an iframe, nested tables, links, and HTML forms. The executor
 never calls a target application's business API or reads its internal state.
 
 The demonstration contains invented records only. It connects to no real bank
-and requires no credentials. Local mode supports real model discovery and replay;
-the public hosted demo runs the verified capability without a model.
+and requires no credentials. The project supports real model discovery, saved
+capabilities, and model-free replay.
 
 **[Open the live demo](https://relay-production-ff74.up.railway.app/configure)**
 
-Try **Replay**, **Practice a handoff**, or **Handle a missing member**. Each visitor
+Try **Discover** with member `1001`, then **Replay** with member `1002`.
+**Practice a handoff** and **Handle a missing member** exercise recovery and business outcomes. Each visitor
 gets a separate temporary workspace and browser session. The hosted service uses
 synthetic members only, allows one active run globally, and bounds each run to
 three minutes (90 seconds for operator intervention). Runs expire on restart;
 this is a review sandbox, not a production banking service.
 
-Live discovery is intentionally disabled on the 1 GB hosted instance. Run it
-locally using the instructions below; the checked-in discovery evidence comes
-from the actual local model. [Deployment notes](deploy/README.md) document the
-container and hosted boundary.
+Hosted discovery is configured for Qwen3 0.6B with thinking enabled and a
+2048-token context in a separate private CPU model service. The deployed 1 GB services have completed real discovery and replay;
+[cloud execution evidence](evidence/README.md#hosted-discovery) records the result. The local default remains Qwen3.5 2B with a 4096-token
+context. No paid model API or user-supplied key is needed.
+[Deployment notes](deploy/README.md) document the two services and hosted boundary.
 
 ## Review in three minutes
 
@@ -56,6 +58,15 @@ For real discovery, install [Ollama](https://ollama.com/download), start it, and
 ollama pull qwen3.5:2b
 ```
 
+For the smaller hosted model configuration locally:
+
+```sh
+ollama pull qwen3:0.6b
+export RELAY_MODEL=qwen3:0.6b
+export RELAY_MODEL_CONTEXT=2048
+export RELAY_MODEL_THINKING=1
+```
+
 The default model endpoint is `http://127.0.0.1:11434`. `OLLAMA_HOST` and
 `RELAY_MODEL` can override it. No paid model API or API key is required. Only
 allowlisted UI labels, the goal, input **names**, and prior action descriptors
@@ -81,6 +92,13 @@ With the target and Ollama running:
 ```
 
 Discovery uses actual model decisions to fill and navigate the live browser.
+The observation excludes native form submissions that browser validation would
+currently block, so a required field must be valid before its submit action
+becomes a candidate. This reads DOM validity, not input values or a fixed plan.
+Each request presents a canonical list of legal actions from the current UI.
+The model chooses a descriptive candidate; the planner maps it to the current
+control ID. This keeps input bindings and control/action pairs valid and makes
+equivalent observations independent of control enumeration order.
 The saved artifact contains parameter references, typed outputs, exact semantic
 targets, and an independently verified success checkpoint. It contains neither
 the example member ID nor a model transcript.

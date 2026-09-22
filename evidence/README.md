@@ -1,6 +1,6 @@
 # Captured execution evidence
 
-These are actual executions against the live local synthetic banking UI on
+The original local captures below are actual executions against the synthetic banking UI on
 September 22, 2026, not scripted model responses. The discovery model was
 `qwen3.5:2b`, digest
 `324d162be6ca5629ae4517c8710434d0bd2d665bc94dbad46e9af8fbf8a2f0df`.
@@ -21,7 +21,7 @@ and recovery runs used invented member 1002. The test suite checks the different
 expected outputs. Persisted results deliberately redact output values, including
 these synthetic values, to demonstrate the same persistence boundary.
 
-Each directory includes structured events and sanitized state observations.
+Each local directory includes structured events and sanitized state observations.
 `handoff/failure-step-3.json` adds a richer structural failure snapshot. The snapshot includes bounded per-frame inventories of trusted headings and controls, with visibility and enabled state. The same
 session ID appears before, during, and after the ownership transitions; it is a
 random correlation identifier, not a browser cookie or credential.
@@ -39,10 +39,32 @@ invalid extra action at the terminal page. The final controller now recognizes
 the declared checkpoint independently, and the captured discovery above uses
 that behavior. This does not imply a perfect planner for arbitrary goals.
 
+## Hosted discovery
+
+The public Railway deployment was exercised on September 22, 2026 with genuine
+private CPU inference: Qwen3 0.6B, alias `relay-discovery:latest`, 2048-token
+context, thinking enabled, and completed-prompt snapshot caching disabled.
+Configured model digest:
+`6fba63b47371d91de091a39084b3b2f7f3741c108de1c52be2f92688afad24c5`.
+
+- `cloud-discover/`: run `bd7128844f764ba2a04c4900dbbf26fd` completed five real
+  model decisions and five browser actions in 28.04 seconds.
+- `cloud-replay/`: run `2a216c759aa349c4b8d84a6438c1bbda` reused that same newly
+  learned capability for another synthetic member in 8.06 seconds, with zero model calls.
+- The same visitor's capability endpoint identified the artifact as newly
+  discovered, and the replay capability's SHA-256 matched it. Both returned the
+  expected, different synthetic balances; persisted outputs remain redacted.
+
+These cloud captures contain sanitized API events/results and the learned
+capability, rather than the local filesystem's per-step snapshots. The model
+service is private; no scripted model-response fallback is used. Native HTML
+validity excludes form submissions the browser would currently block, without
+reading input values into evidence or prescribing a navigation plan.
+
 ## Automated verification
 
-The complete test suite passed **100 tests** on Python 3.14 / macOS ARM64.
-It includes independent page routes, redacted workspace history, corrupted capability handling, cancellation during model/browser awaits, richer snapshot privacy, real Chromium flows, missing/ambiguous controls, cross-origin and
+The complete test suite passed **147 tests** on Python 3.14 / macOS ARM64.
+It includes provider response validation, control-order invariance, real candidate binding, hosted visitor isolation and limits, independent page routes, redacted workspace history, corrupted capability handling, cancellation during model/browser awaits, richer snapshot privacy, real Chromium flows, missing/ambiguous controls, cross-origin and
 multi-hop redirects, popup/WebSocket restrictions, unexpected dialogs,
 same-session recovery, input and schema validation, forged completion,
 bounded retries/timeouts, and sensitive sentinel non-persistence. Two upstream

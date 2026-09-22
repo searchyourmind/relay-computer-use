@@ -1,0 +1,9 @@
+{"at": "2026-09-22T18:32:29.827773+00:00", "event": "run_started", "step": 0, "mode": "replay", "input_fields": ["member_id"], "provider": null}
+{"at": "2026-09-22T18:32:30.715594+00:00", "event": "session_opened", "step": 0, "session_id": "deea4067ed8c4f6da940eebb7fa6280f"}
+{"at": "2026-09-22T18:32:31.979799+00:00", "event": "action_completed", "step": 0, "action": "fill", "target": {"kind": "label", "name": "Member ID", "role": null, "frame": "Member workspace"}, "input_ref": "member_id"}
+{"at": "2026-09-22T18:32:33.131224+00:00", "event": "action_completed", "step": 1, "action": "click", "target": {"kind": "role", "name": "Find member", "role": "button", "frame": "Member workspace"}, "input_ref": null}
+{"at": "2026-09-22T18:32:34.377187+00:00", "event": "action_completed", "step": 2, "action": "click", "target": {"kind": "role", "name": "Open profile", "role": "link", "frame": "Member workspace"}, "input_ref": null}
+{"at": "2026-09-22T18:32:35.609386+00:00", "event": "action_completed", "step": 3, "action": "click", "target": {"kind": "role", "name": "View accounts", "role": "link", "frame": "Member workspace"}, "input_ref": null}
+{"at": "2026-09-22T18:32:36.780876+00:00", "event": "action_completed", "step": 4, "action": "click", "target": {"kind": "role", "name": "Open savings", "role": "link", "frame": "Member workspace"}, "input_ref": null}
+{"at": "2026-09-22T18:32:37.782003+00:00", "event": "checkpoint_verified", "step": 5, "target": {"kind": "role", "name": "Savings account", "role": "heading", "frame": "Member workspace"}}
+{"at": "2026-09-22T18:32:37.782520+00:00", "event": "run_finished", "step": 5, "status": "success", "code": "verified", "model_calls": 0, "output_fields": ["current_balance"], "recoveries": 0, "handoffs": 0}

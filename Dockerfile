@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # The hosted review surface runs deterministic replay within a 1 GB plan.
-# Real LLM discovery remains reproducible locally (README + recorded evidence).
+# Live discovery connects to a separate private model service when enabled.
 FROM python:3.12-slim-bookworm
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \

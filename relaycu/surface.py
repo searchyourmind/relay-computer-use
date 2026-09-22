@@ -314,6 +314,8 @@ class Surface:
                     if count > 1 and await self._any_visible(locator):
                         raise SurfaceError("ambiguous_target", "An actionable UI target must resolve uniquely.")
                     if count == 1 and await locator.is_visible() and await locator.is_enabled():
+                        if action == "click" and await self._native_submission_blocked(locator):
+                            continue
                         control_id = f"c_{nonce}_{len(controls)}"
                         controls.append(Control(id=control_id, target=target, actions=[action]))
                         self._control_targets[control_id] = target
@@ -331,6 +333,22 @@ class Surface:
     @staticmethod
     async def _any_visible(locator: Locator) -> bool:
         return any([await item.is_visible() for item in await locator.all()])
+
+    @staticmethod
+    async def _native_submission_blocked(locator: Locator) -> bool:
+        """Observe native form validity without values or validation events.
+
+        A submit button can be enabled while HTML constraints prevent submission.
+        This reads current browser affordances; it does not prescribe a workflow.
+        """
+        return await locator.evaluate("""el => {
+            const submit = (el.tagName === 'BUTTON' && el.type === 'submit') ||
+                (el.tagName === 'INPUT' && ['submit', 'image'].includes(el.type));
+            const form = el.form;
+            if (!submit || !form || form.noValidate || el.formNoValidate) return false;
+            return Array.from(form.elements).some(control =>
+                control.willValidate && control.validity && !control.validity.valid);
+        }""")
 
     def _authorize(self, step: Step, operator: bool) -> None:
         self._validate_target(step.target)

@@ -12,7 +12,14 @@ accounts, and open savings. This provides a multi-step read operation without
 introducing a financial mutation. Discovery's input/output contract is supplied
 by the application; the model discovers the steps, not the authorization or
 success definition. Qwen3.5 2B through local Ollama keeps the example reproducible
-without a paid provider. A larger model could improve planning, but the executor
+without a paid provider. Hosted discovery uses Qwen3 0.6B in a private CPU service,
+with thinking enabled and a 2048-token context configured for the 1 GB memory
+limit; the local planner default remains 4096 tokens. Native HTML form validity excludes submissions the browser would block;
+this is based on current DOM state, not field names or a saved navigation plan.
+Legal candidates come from current
+UI affordances and declared parameters; canonical ordering stabilizes equivalent
+observations. The model chooses the action and the executor checks it. A larger
+model could improve planning, but the executor
 must remain equally strict. An initial discovery attempt reached the right
 screen but proposed another action. Completion now uses the declared checkpoint
 and output validation independently of model self-reporting.
@@ -112,9 +119,11 @@ security sandbox.
 One process and one active console run keep ownership and debugging clear. The
 hosted container serves the console publicly and the synthetic target on loopback.
 It validates its exact host and HTTPS origin, restricts goals and inputs, and
-bounds concurrency, run lifetime and request rate. The 1 GB hosting limit excludes
-the local model, so cloud discovery is explicitly disabled; replay and real
-same-session handoff remain interactive. I did not build queues, a capability
+bounds concurrency, run lifetime and request rate. A separate private
+model service provides the inference endpoint for cloud discovery, with a
+2048-token context selected for the per-service 1 GB limit. Actual cloud discovery completed five model-driven actions, and replay
+with another member reused that artifact with zero model calls. Prompt snapshot
+caching is disabled to bound the private service’s memory use. Replay and same-session handoff use the same execution controller. I did not build queues, a capability
 marketplace, real bank integration or full co-browsing. The demo session-recovery button stands in for
 human reauthentication; its control transfer and browser continuity are real,
 but it is not a production login implementation. Visitor cookies isolate the public synthetic

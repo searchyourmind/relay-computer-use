@@ -80,6 +80,54 @@ async def test_real_iframe_flow_and_redacted_observation(surface, demo_origin):
     assert "Savings account" in serialized
 
 
+async def test_native_required_form_submit_appears_only_after_valid_fill(surface, demo_origin):
+    await surface.start(demo_origin)
+    frame = surface.page.frames[1]
+    await frame.evaluate("""() => {
+        window.observedInvalidEvents = 0;
+        document.addEventListener('invalid', () => window.observedInvalidEvents++, true);
+    }""")
+    initial = await surface.observe()
+    assert "Member ID" in {control.target.name for control in initial.controls}
+    assert "Find member" not in {control.target.name for control in initial.controls}
+    member = Target(kind="label", name="Member ID", frame="Member workspace")
+    await surface.act(Step(action="fill", target=member, input_ref="member_id"), {"member_id": "PRIVATE-FORM-VALUE"})
+    filled = await surface.observe()
+    assert "Find member" in {control.target.name for control in filled.controls}
+    assert "PRIVATE-FORM-VALUE" not in filled.model_dump_json()
+    # Current DOM validity wins over a previously successful fill.
+    await frame.get_by_label("Member ID", exact=True).fill("")
+    cleared = await surface.observe()
+    assert "Find member" not in {control.target.name for control in cleared.controls}
+    assert await frame.evaluate("window.observedInvalidEvents") == 0
+
+
+@pytest.mark.parametrize("bypass", ["form", "submitter"])
+async def test_native_submit_honors_explicit_validation_bypass(surface, demo_origin, bypass):
+    await surface.start(demo_origin)
+    await surface.page.frames[1].get_by_role("button", name="Find member", exact=True).evaluate(
+        "(el, bypass) => { if (bypass === 'form') el.form.noValidate = true; else el.formNoValidate = true; }", bypass)
+    assert "Find member" in {control.target.name for control in (await surface.observe()).controls}
+
+
+async def test_invalid_form_does_not_hide_links_non_submit_buttons_or_other_forms(surface, demo_origin):
+    await surface.start(demo_origin)
+    await surface.page.frames[1].evaluate("""() => {
+        const form = document.querySelector('form');
+        const link = document.createElement('a');
+        link.href = '/workspace/profile'; link.textContent = 'Open profile'; form.append(link);
+        const cancel = document.createElement('button');
+        cancel.type = 'button'; cancel.textContent = 'Retry'; form.append(cancel);
+        const other = document.createElement('form');
+        const submit = document.createElement('button');
+        submit.type = 'submit'; submit.textContent = 'View accounts'; other.append(submit);
+        document.body.append(other);
+    }""")
+    names = {control.target.name for control in (await surface.observe()).controls}
+    assert "Find member" not in names
+    assert {"Member ID", "Open profile", "Retry", "View accounts"} <= names
+
+
 async def test_operator_recovery_preserves_the_same_live_browser(surface, demo_origin):
     await open_profile(surface, demo_origin, "session")
     original_page, original_session = surface.page, surface.session_id

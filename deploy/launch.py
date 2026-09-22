@@ -1,7 +1,8 @@
 """Supervise the private synthetic bank and public replay console.
 
 Only the console listens publicly. If either child fails, stop both and let the
-container platform restart a consistent application. This image has no model.
+container platform restart a consistent application. Discovery can use a private
+model service configured through OLLAMA_HOST.
 """
 from __future__ import annotations
 
@@ -26,8 +27,6 @@ def request_stop(signum, frame):
 
 def spawn(name: str, command: list[str]):
     env = os.environ.copy()
-    # This restricted image deliberately contains no model runtime.
-    env["RELAY_ENABLE_DISCOVERY"] = "0"
     child = subprocess.Popen(command, cwd=ROOT, env=env, start_new_session=True)
     CHILDREN.append((name, child))
     print(f"relay: started {name}", flush=True)
