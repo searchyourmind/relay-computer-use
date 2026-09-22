@@ -67,7 +67,10 @@ expand it. Product/version checks, failed locators and checkpoints would mark a
 binding incompatible and require a reviewed rediscovery. Capabilities should be
 promoted through fixture replay and sampled tenant validation before deployment.
 The current product/version fields describe compatibility; production version
-detection and tenant binding storage are deliberately not built.
+detection and tenant binding storage are deliberately not built. The public
+review sandbox isolates temporary visitors with signed, short-lived HttpOnly
+cookies. Run lookup, history, artifacts and control routes enforce ownership;
+this is not institutional identity or tenant authorization.
 
 # Escalation & handoff
 
@@ -106,12 +109,16 @@ security sandbox.
 
 # Cuts
 
-One process and one active console run keep ownership and debugging clear. I
-did not build queues, a capability marketplace, cloud deployment, real bank
-integration or full co-browsing. The demo session-recovery button stands in for
+One process and one active console run keep ownership and debugging clear. The
+hosted container serves the console publicly and the synthetic target on loopback.
+It validates its exact host and HTTPS origin, restricts goals and inputs, and
+bounds concurrency, run lifetime and request rate. The 1 GB hosting limit excludes
+the local model, so cloud discovery is explicitly disabled; replay and real
+same-session handoff remain interactive. I did not build queues, a capability
+marketplace, real bank integration or full co-browsing. The demo session-recovery button stands in for
 human reauthentication; its control transfer and browser continuity are real,
-but it is not a production login implementation. Console authentication and
-operator identity are local-development assumptions, not enterprise guarantees.
+but it is not a production login implementation. Visitor cookies isolate the public synthetic
+demo but do not establish authenticated operator identity or enterprise guarantees.
 
 Next I would add authenticated operator leases, explicitly versioned tenant
 bindings, retention controls, and a second substantially different target before

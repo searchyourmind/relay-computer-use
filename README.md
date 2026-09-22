@@ -7,9 +7,22 @@ their savings balance through an intentionally old-fashioned banking interface.
 The target uses an iframe, nested tables, links, and HTML forms. The executor
 never calls a target application's business API or reads its internal state.
 
-The demonstration is local and contains invented records only. It connects to
-no real bank and requires no credentials. The operator console is a development
-tool bound to loopback, not a remotely deployable banking service.
+The demonstration contains invented records only. It connects to no real bank
+and requires no credentials. Local mode supports real model discovery and replay;
+the public hosted demo runs the verified capability without a model.
+
+**[Open the live demo](https://relay-production-ff74.up.railway.app/configure)**
+
+Try **Replay**, **Practice a handoff**, or **Handle a missing member**. Each visitor
+gets a separate temporary workspace and browser session. The hosted service uses
+synthetic members only, allows one active run globally, and bounds each run to
+three minutes (90 seconds for operator intervention). Runs expire on restart;
+this is a review sandbox, not a production banking service.
+
+Live discovery is intentionally disabled on the 1 GB hosted instance. Run it
+locally using the instructions below; the checked-in discovery evidence comes
+from the actual local model. [Deployment notes](deploy/README.md) document the
+container and hosted boundary.
 
 ## Review in three minutes
 
@@ -170,5 +183,5 @@ The general flow representation is reusable, but onboarding another product
 requires a reviewed policy, observation vocabulary and output contract.
 
 No native desktop adapter, real authentication, distributed workers, production
-operator authentication, or tenant deployment infrastructure is implemented.
+operator authentication, or institutional tenant deployment infrastructure is implemented.
 Those boundaries are described in the report rather than claimed as features.

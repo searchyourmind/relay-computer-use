@@ -6,7 +6,7 @@
   const query = new URLSearchParams(location.search);
   const terminal = new Set(['success','business_outcome','failure']);
   const runIdPattern = /^[a-f0-9]{32}$/;
-  const state = {mode:query.get('mode')==='replay'?'replay':'discover',run:null,runId:null,capability:null,workspace:null,loading:false,acting:false,fetching:false,workspaceFetching:false,pollTimer:null,workspaceTimer:null,pollErrors:0,eventsSignature:'',renderedEvents:[],historySignature:'',connected:false,selectionInitialized:false,capabilitySignature:''};
+  const state = {mode:query.get('mode')==='replay'?'replay':'discover',config:null,configFetching:false,configTimer:null,run:null,runId:null,capability:null,workspace:null,loading:false,acting:false,fetching:false,workspaceFetching:false,pollTimer:null,workspaceTimer:null,pollErrors:0,eventsSignature:'',renderedEvents:[],historySignature:'',connected:false,selectionInitialized:false,capabilitySignature:''};
   const text = (id,value) => {if($(id))$(id).textContent=String(value??'—');};
   const on = (id,type,handler) => $(id)?.addEventListener(type,handler);
   const scenarioHelp = {normal:'A signed-in session with the member’s records available.',not_found:'Check how the workflow handles a member who is not in the records.',session:'The workflow must pause for an operator to restore the session.',transient:'A temporary interruption tests recovery within the workflow.',permission:'The application restricts access and may need operator attention.',error:'An application failure tests a safe, explicit stopping point.',dialog:'An unexpected application dialog pauses the workflow for review.',slow:'The application responds slowly so the workflow must wait appropriately.',ambiguous:'Multiple matching records test whether the workflow avoids guessing.'};
@@ -33,16 +33,37 @@
     finally{clearTimeout(timer);}
   }
   function connection(ok){state.connected=ok;$('connection-dot').className='connection-dot '+(ok?'connected':'disconnected');text('connection-label',ok?'Workspace connected':'Connection interrupted');}
+  function durationLabel(seconds){return seconds%60===0?(seconds/60)+' minute'+(seconds===60?'':'s'):seconds+' seconds';}
+  function applyConfiguration(config){
+    state.config=config;
+    if(!config.hosted)return;
+    document.body.dataset.hosted='true';
+    text('environment-rail','HOSTED DEMO');text('environment-label','HOSTED / DEMO');
+    $('hosted-notice').hidden=false;
+    text('hosted-session-note','Your browser has its own demo session. Runs stop after '+durationLabel(config.run_deadline_seconds)+' on this shared service; complete a handoff within '+durationLabel(config.operator_timeout_seconds)+'.');
+    text('hosted-discovery-note',config.discovery_enabled?'Try replay first, or discover a fresh workflow with the live model.':'This hosted demo runs real browser replay and operator handoffs. Live model discovery is available when running the source project locally; its recorded evidence is included in the repository.');
+    if(page==='configure'){
+      $('goal').value=config.fixed_goal;$('goal').readOnly=true;text('goal-hint','FIXED DEMO TASK');text('member-hint','SYNTHETIC RECORD');
+      const input=$('member-id'),select=document.createElement('select');select.id=input.id;select.name=input.name;select.required=true;
+      config.member_ids.forEach(id=>{const option=document.createElement('option');option.value=id;option.textContent='Member '+id+' · synthetic';select.append(option);});
+      select.value=config.member_ids.includes(input.value)?input.value:config.member_ids[0];input.replaceWith(select);
+      $('discover-tab').title=config.discovery_enabled?'Discover a workflow with the live model':'Run the source project locally for live model discovery';
+      text('discovery-availability',config.discovery_enabled?'Live discovery is available. Replay uses no model.':'Live discovery is available locally. Try the verified replay here.');$('discovery-availability').hidden=false;
+    }
+    state.mode=query.get('mode')==='discover'&&config.discovery_enabled?'discover':'replay';
+  }
   function setMode(mode){
     if(state.loading||state.workspace?.active_run_id)return;
+    if(mode==='discover'&&state.config?.discovery_enabled===false)mode='replay';
     state.mode=mode;
     document.querySelectorAll('[data-mode]').forEach(button=>{const selected=button.dataset.mode===mode;button.setAttribute('aria-selected',String(selected));button.tabIndex=selected?0:-1;});
-    text('mode-description',mode==='discover'?'Learn a reusable workflow from a goal and the live application. Requires the local model.':'Run the saved workflow with new inputs. No model service is needed.');
+    text('mode-description',mode==='discover'?(state.config?.hosted?'A live model chooses actions from the application and saves a reusable workflow.':'Learn a reusable workflow from a goal and the live application. Requires the local model.'):(state.config?.hosted?'Run the verified workflow with a new synthetic member. Replay makes zero model calls.':'Run the saved workflow with new inputs. No model service is needed.'));
     updateControls();
   }
   function updateControls(){
-    const formBusy=state.loading||!state.workspace||Boolean(state.workspace.active_run_id);
+    const formBusy=state.loading||!state.config||!state.workspace||Boolean(state.workspace.active_run_id);
     for(const id of ['goal','member-id','scenario','discover-tab','replay-tab','start'])if($(id))$(id).disabled=formBusy;
+    if($('discover-tab')&&state.config?.discovery_enabled===false)$('discover-tab').disabled=true;
     document.querySelectorAll('[data-preset]').forEach(button=>button.disabled=formBusy);
     text('start-label',state.loading?'Starting…':state.workspace?.active_run_id?'A run is in progress':!state.workspace?'Connecting…':state.mode==='discover'?'Discover workflow':'Replay workflow');
     if(!$('operator-panel'))return;
@@ -193,7 +214,7 @@
     const box=document.createElement('section');box.id='selection-empty';box.className='card workflow-unavailable';const title=document.createElement('h2'),note=document.createElement('p'),link=document.createElement('a');title.textContent='This run is no longer available.';note.textContent='Runs are kept for this workspace session. Select another from Activity or start a fresh run.';link.href='/configure';link.className='secondary';link.textContent='Start a new run ↗';box.append(title,note,link);$('page-content').prepend(box);
   }
   async function refreshCapability(){
-    if(page!=='workflows')return;
+    if(page!=='workflows'||!state.config)return;
     try{const data=await api('/api/capability');const signature=JSON.stringify(data);if(signature!==state.capabilitySignature){state.capabilitySignature=signature;renderCapability(data.capability,data.source);}error('');}
     catch(err){error(err.message);$('workflow-detail').hidden=true;$('workflow-unavailable').hidden=false;state.capabilitySignature='';}
   }
@@ -205,6 +226,7 @@
     finally{state.fetching=false;if(state.runId&&(!state.run||!terminal.has(state.run.status)))state.pollTimer=setTimeout(poll,Math.min(5000,900*(state.pollErrors+1)));}
   }
   async function refreshWorkspace(initial=false){
+    if(!state.config){initialize();return;}
     if(state.workspaceFetching)return;state.workspaceFetching=true;
     try{
       const workspace=await api('/api/workspace');connection(true);renderWorkspace(workspace);
@@ -232,7 +254,7 @@
     catch(err){error(err.message);await refreshWorkspace();state.loading=false;updateControls();}
   });
   document.querySelectorAll('[data-mode]').forEach(button=>{button.addEventListener('click',()=>setMode(button.dataset.mode));button.addEventListener('keydown',event=>{if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();if(button.disabled)return;setMode(state.mode==='discover'?'replay':'discover');$(state.mode+'-tab').focus();}});});
-  document.querySelectorAll('[data-preset]').forEach(button=>button.addEventListener('click',()=>{if(state.workspace?.active_run_id)return;setMode('replay');$('member-id').value=button.dataset.preset==='not_found'?'9999':'1002';$('scenario').value=button.dataset.preset;text('scenario-help',scenarioHelp[button.dataset.preset]);$('start').focus();toast('Replay preset ready. Start when you are ready.');}));
+  document.querySelectorAll('[data-preset]').forEach(button=>button.addEventListener('click',()=>{if(state.workspace?.active_run_id)return;setMode('replay');$('member-id').value=button.dataset.preset==='not_found'&&!state.config?.hosted?'9999':'1002';$('scenario').value=button.dataset.preset;text('scenario-help',scenarioHelp[button.dataset.preset]);$('start').focus();toast('Replay preset ready. Start when you are ready.');}));
   on('scenario','change',()=>text('scenario-help',scenarioHelp[$('scenario').value]));
   on('claim','click',()=>{if(state.run?.owner==='awaiting_operator')act('claim');});
   on('restore','click',()=>{if(state.run?.owner==='human')act('operator',{action:'restore_session'});});
@@ -246,8 +268,16 @@
   on('copy-artifact','click',async()=>{if(!state.capability)return;try{await navigator.clipboard.writeText(JSON.stringify(state.capability,null,2));toast('Workflow JSON copied.');}catch{error('Clipboard access is unavailable. Download the workflow JSON instead.');}});
   document.querySelector('[data-nav="'+page+'"]').setAttribute('aria-current','page');
   document.addEventListener('visibilitychange',()=>{if(!document.hidden){refreshWorkspace();refreshCapability();if(state.runId&&!terminal.has(state.run?.status))poll();}});
-  window.addEventListener('pagehide',()=>{clearTimeout(state.pollTimer);clearTimeout(state.workspaceTimer);});
+  window.addEventListener('pagehide',()=>{clearTimeout(state.pollTimer);clearTimeout(state.workspaceTimer);clearTimeout(state.configTimer);});
   window.addEventListener('pageshow',event=>{if(event.persisted){state.loading=false;refreshWorkspace();refreshCapability();if(state.runId)poll();}});
-  setMode(state.mode);updateControls();refreshWorkspace(true);
-  refreshCapability();
+  async function initialize(){
+    if(state.configFetching||state.config)return;state.configFetching=true;clearTimeout(state.configTimer);
+    try{
+      const config=await api('/api/config');
+      if(typeof config.hosted!=='boolean'||typeof config.discovery_enabled!=='boolean'||config.hosted&&(!Array.isArray(config.member_ids)||!config.member_ids.length||typeof config.fixed_goal!=='string'||!Number.isFinite(config.run_deadline_seconds)||!Number.isFinite(config.operator_timeout_seconds)))throw new Error('The workspace configuration is unavailable.');
+      applyConfiguration(config);setMode(state.mode);error('');refreshWorkspace(true);refreshCapability();
+    }catch(err){connection(false);error('Unable to prepare the workspace. '+err.message);state.configTimer=setTimeout(initialize,5000);}
+    finally{state.configFetching=false;updateControls();}
+  }
+  setMode(state.mode);updateControls();initialize();
 })();
