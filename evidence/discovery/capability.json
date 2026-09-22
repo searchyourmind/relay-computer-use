@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0",
+  "name": "read_savings_balance",
+  "revision": 1,
+  "product": "demo-corebank",
+  "product_version": "1",
+  "inputs": {
+    "member_id": {
+      "type": "string",
+      "description": "Synthetic member identifier; provided at invocation",
+      "sensitive": true,
+      "max_length": 24
+    }
+  },
+  "outputs": {
+    "current_balance": {
+      "type": "decimal",
+      "target": {
+        "kind": "label",
+        "name": "Current balance",
+        "role": null,
+        "frame": "Member workspace"
+      },
+      "description": "Savings balance in USD, exact decimal string"
+    }
+  },
+  "steps": [
+    {
+      "action": "fill",
+      "target": {
+        "kind": "label",
+        "name": "Member ID",
+        "role": null,
+        "frame": "Member workspace"
+      },
+      "input_ref": "member_id"
+    },
+    {
+      "action": "click",
+      "target": {
+        "kind": "role",
+        "name": "Find member",
+        "role": "button",
+        "frame": "Member workspace"
+      },
+      "input_ref": null
+    },
+    {
+      "action": "click",
+      "target": {
+        "kind": "role",
+        "name": "Open profile",
+        "role": "link",
+        "frame": "Member workspace"
+      },
+      "input_ref": null
+    },
+    {
+      "action": "click",
+      "target": {
+        "kind": "role",
+        "name": "View accounts",
+        "role": "link",
+        "frame": "Member workspace"
+      },
+      "input_ref": null
+    },
+    {
+      "action": "click",
+      "target": {
+        "kind": "role",
+        "name": "Open savings",
+        "role": "link",
+        "frame": "Member workspace"
+      },
+      "input_ref": null
+    }
+  ],
+  "checkpoint": {
+    "kind": "role",
+    "name": "Savings account",
+    "role": "heading",
+    "frame": "Member workspace"
+  }
+}

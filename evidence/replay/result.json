@@ -1,0 +1,11 @@
+{
+  "status": "success",
+  "code": "verified",
+  "step": 5,
+  "outputs": {
+    "current_balance": "[returned to caller; not persisted]"
+  },
+  "model_calls": 0,
+  "recoveries": 0,
+  "handoffs": 0
+}

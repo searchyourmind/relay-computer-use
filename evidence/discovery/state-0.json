@@ -1,0 +1,34 @@
+{
+  "route": "/workspace",
+  "headings": [
+    "Member services",
+    "Find a member"
+  ],
+  "controls": [
+    {
+      "id": "c_c0c50f31dc_0",
+      "target": {
+        "kind": "label",
+        "name": "Member ID",
+        "role": null,
+        "frame": "Member workspace"
+      },
+      "actions": [
+        "fill"
+      ]
+    },
+    {
+      "id": "c_c0c50f31dc_1",
+      "target": {
+        "kind": "role",
+        "name": "Find member",
+        "role": "button",
+        "frame": "Member workspace"
+      },
+      "actions": [
+        "click"
+      ]
+    }
+  ],
+  "condition": "ready"
+}

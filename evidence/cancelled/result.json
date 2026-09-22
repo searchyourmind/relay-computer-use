@@ -1,0 +1,19 @@
+{
+  "status": "failure",
+  "code": "operator_aborted",
+  "step": 1,
+  "outputs": {},
+  "model_calls": 2,
+  "recoveries": 0,
+  "handoffs": 0,
+  "diagnostics": {
+    "step": 1,
+    "expected": {
+      "state": "execution stopped at the operator's request"
+    },
+    "observed": {
+      "condition": "ready",
+      "route": "/workspace"
+    }
+  }
+}

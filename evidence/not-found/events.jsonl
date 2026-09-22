@@ -1,0 +1,5 @@
+{"at": "2026-09-22T15:46:09.301199+00:00", "event": "run_started", "step": 0, "mode": "replay", "input_fields": ["member_id"], "provider": null}
+{"at": "2026-09-22T15:46:10.930227+00:00", "event": "session_opened", "step": 0, "session_id": "9504d81691f049609ebf2ee230ac1854"}
+{"at": "2026-09-22T15:46:11.259354+00:00", "event": "action_completed", "step": 0, "action": "fill", "target": {"kind": "label", "name": "Member ID", "role": null, "frame": "Member workspace"}, "input_ref": "member_id"}
+{"at": "2026-09-22T15:46:11.467273+00:00", "event": "action_completed", "step": 1, "action": "click", "target": {"kind": "role", "name": "Find member", "role": "button", "frame": "Member workspace"}, "input_ref": null}
+{"at": "2026-09-22T15:46:11.680610+00:00", "event": "run_finished", "step": 2, "status": "business_outcome", "code": "not_found", "model_calls": 0, "output_fields": [], "recoveries": 0, "handoffs": 0}

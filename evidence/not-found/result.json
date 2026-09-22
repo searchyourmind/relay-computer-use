@@ -1,0 +1,9 @@
+{
+  "status": "business_outcome",
+  "code": "not_found",
+  "step": 2,
+  "outputs": {},
+  "model_calls": 0,
+  "recoveries": 0,
+  "handoffs": 0
+}

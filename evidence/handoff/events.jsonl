@@ -1,0 +1,13 @@
+{"at": "2026-09-22T15:44:57.495423+00:00", "event": "run_started", "step": 0, "mode": "replay", "input_fields": ["member_id"], "provider": null}
+{"at": "2026-09-22T15:44:59.104534+00:00", "event": "session_opened", "step": 0, "session_id": "0f10d2f44e6b40dab79b8fb5f1cb7e78"}
+{"at": "2026-09-22T15:44:59.419139+00:00", "event": "action_completed", "step": 0, "action": "fill", "target": {"kind": "label", "name": "Member ID", "role": null, "frame": "Member workspace"}, "input_ref": "member_id"}
+{"at": "2026-09-22T15:44:59.638580+00:00", "event": "action_completed", "step": 1, "action": "click", "target": {"kind": "role", "name": "Find member", "role": "button", "frame": "Member workspace"}, "input_ref": null}
+{"at": "2026-09-22T15:44:59.889267+00:00", "event": "action_completed", "step": 2, "action": "click", "target": {"kind": "role", "name": "Open profile", "role": "link", "frame": "Member workspace"}, "input_ref": null}
+{"at": "2026-09-22T15:45:00.383507+00:00", "event": "intervention_requested", "step": 3, "code": "session_expired", "session_id": "0f10d2f44e6b40dab79b8fb5f1cb7e78", "evidence": "failure-step-3.json", "expected": "ready application state", "observed": "session_expired"}
+{"at": "2026-09-22T15:45:17.889686+00:00", "event": "control_transferred", "step": 3, "owner": "human", "session_id": "0f10d2f44e6b40dab79b8fb5f1cb7e78"}
+{"at": "2026-09-22T15:45:28.055821+00:00", "event": "operator_action", "step": 3, "action": "restore_session", "session_id": "0f10d2f44e6b40dab79b8fb5f1cb7e78", "observed": "ready"}
+{"at": "2026-09-22T15:45:33.350754+00:00", "event": "control_transferred", "step": 3, "owner": "automation", "session_id": "0f10d2f44e6b40dab79b8fb5f1cb7e78"}
+{"at": "2026-09-22T15:45:33.576453+00:00", "event": "action_completed", "step": 3, "action": "click", "target": {"kind": "role", "name": "View accounts", "role": "link", "frame": "Member workspace"}, "input_ref": null}
+{"at": "2026-09-22T15:45:33.772826+00:00", "event": "action_completed", "step": 4, "action": "click", "target": {"kind": "role", "name": "Open savings", "role": "link", "frame": "Member workspace"}, "input_ref": null}
+{"at": "2026-09-22T15:45:33.957107+00:00", "event": "checkpoint_verified", "step": 5, "target": {"kind": "role", "name": "Savings account", "role": "heading", "frame": "Member workspace"}}
+{"at": "2026-09-22T15:45:33.957317+00:00", "event": "run_finished", "step": 5, "status": "success", "code": "verified", "model_calls": 0, "output_fields": ["current_balance"], "recoveries": 0, "handoffs": 1}

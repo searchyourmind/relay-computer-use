@@ -1,0 +1,92 @@
+{
+  "observation": {
+    "route": "/workspace/profile",
+    "headings": [
+      "Member services",
+      "Session expired"
+    ],
+    "controls": [
+      {
+        "id": "c_2f81b5e399_0",
+        "target": {
+          "kind": "role",
+          "name": "Restore session",
+          "role": "button",
+          "frame": "Member workspace"
+        },
+        "actions": [
+          "click"
+        ]
+      }
+    ],
+    "condition": "session_expired"
+  },
+  "structure": {
+    "visible_frames": 1,
+    "visible_controls": 2,
+    "frames": [
+      {
+        "scope": "main",
+        "visible": true,
+        "visible_controls": 0,
+        "headings": [
+          {
+            "target": {
+              "kind": "role",
+              "name": "Member services",
+              "role": "heading"
+            },
+            "match_count": 1,
+            "elements": [
+              {
+                "visible": true
+              }
+            ],
+            "sample_truncated": false
+          }
+        ],
+        "controls": []
+      },
+      {
+        "scope": "Member workspace",
+        "visible": true,
+        "visible_controls": 2,
+        "headings": [
+          {
+            "target": {
+              "kind": "role",
+              "name": "Session expired",
+              "role": "heading",
+              "frame": "Member workspace"
+            },
+            "match_count": 1,
+            "elements": [
+              {
+                "visible": true
+              }
+            ],
+            "sample_truncated": false
+          }
+        ],
+        "controls": [
+          {
+            "target": {
+              "kind": "role",
+              "name": "Restore session",
+              "role": "button",
+              "frame": "Member workspace"
+            },
+            "match_count": 1,
+            "elements": [
+              {
+                "visible": true,
+                "enabled": true
+              }
+            ],
+            "sample_truncated": false
+          }
+        ]
+      }
+    ]
+  }
+}

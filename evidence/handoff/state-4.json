@@ -1,0 +1,22 @@
+{
+  "route": "/workspace/accounts",
+  "headings": [
+    "Member services",
+    "Member accounts"
+  ],
+  "controls": [
+    {
+      "id": "c_707f6dea59_0",
+      "target": {
+        "kind": "role",
+        "name": "Open savings",
+        "role": "link",
+        "frame": "Member workspace"
+      },
+      "actions": [
+        "click"
+      ]
+    }
+  ],
+  "condition": "ready"
+}

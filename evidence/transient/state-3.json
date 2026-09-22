@@ -1,0 +1,22 @@
+{
+  "route": "/workspace/resume",
+  "headings": [
+    "Member services",
+    "Member overview"
+  ],
+  "controls": [
+    {
+      "id": "c_69a228bb27_0",
+      "target": {
+        "kind": "role",
+        "name": "View accounts",
+        "role": "link",
+        "frame": "Member workspace"
+      },
+      "actions": [
+        "click"
+      ]
+    }
+  ],
+  "condition": "ready"
+}

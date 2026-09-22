@@ -1,0 +1,10 @@
+{"at": "2026-09-22T05:49:29.484468+00:00", "event": "run_started", "step": 0, "mode": "replay", "input_fields": ["member_id"], "provider": null}
+{"at": "2026-09-22T05:49:30.673117+00:00", "event": "session_opened", "step": 0, "session_id": "179ffd0e81c24b69bdf29472ca01a666"}
+{"at": "2026-09-22T05:49:31.003061+00:00", "event": "action_completed", "step": 0, "action": "fill", "target": {"kind": "label", "name": "Member ID", "role": null, "frame": "Member workspace"}, "input_ref": "member_id"}
+{"at": "2026-09-22T05:49:31.202693+00:00", "event": "action_completed", "step": 1, "action": "click", "target": {"kind": "role", "name": "Find member", "role": "button", "frame": "Member workspace"}, "input_ref": null}
+{"at": "2026-09-22T05:49:31.438229+00:00", "event": "action_completed", "step": 2, "action": "click", "target": {"kind": "role", "name": "Open profile", "role": "link", "frame": "Member workspace"}, "input_ref": null}
+{"at": "2026-09-22T05:49:31.587844+00:00", "event": "bounded_recovery", "step": 3, "code": "transient", "attempt": 1}
+{"at": "2026-09-22T05:49:31.871381+00:00", "event": "action_completed", "step": 3, "action": "click", "target": {"kind": "role", "name": "View accounts", "role": "link", "frame": "Member workspace"}, "input_ref": null}
+{"at": "2026-09-22T05:49:32.150066+00:00", "event": "action_completed", "step": 4, "action": "click", "target": {"kind": "role", "name": "Open savings", "role": "link", "frame": "Member workspace"}, "input_ref": null}
+{"at": "2026-09-22T05:49:32.515856+00:00", "event": "checkpoint_verified", "step": 5, "target": {"kind": "role", "name": "Savings account", "role": "heading", "frame": "Member workspace"}}
+{"at": "2026-09-22T05:49:32.516269+00:00", "event": "run_finished", "step": 5, "status": "success", "code": "verified", "model_calls": 0, "output_fields": ["current_balance"], "recoveries": 1, "handoffs": 0}

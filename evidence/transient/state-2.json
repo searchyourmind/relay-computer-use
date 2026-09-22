@@ -1,0 +1,22 @@
+{
+  "route": "/workspace/find",
+  "headings": [
+    "Member services",
+    "Search results"
+  ],
+  "controls": [
+    {
+      "id": "c_c2d3a12716_0",
+      "target": {
+        "kind": "role",
+        "name": "Open profile",
+        "role": "link",
+        "frame": "Member workspace"
+      },
+      "actions": [
+        "click"
+      ]
+    }
+  ],
+  "condition": "ready"
+}

@@ -1,0 +1,9 @@
+{
+  "route": "/workspace/savings",
+  "headings": [
+    "Member services",
+    "Savings account"
+  ],
+  "controls": [],
+  "condition": "ready"
+}

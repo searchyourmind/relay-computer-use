@@ -1,0 +1,6 @@
+{"at": "2026-09-22T15:46:57.113293+00:00", "event": "run_started", "step": 0, "mode": "discover", "input_fields": ["member_id"], "provider": "ollama"}
+{"at": "2026-09-22T15:46:59.030250+00:00", "event": "session_opened", "step": 0, "session_id": "fbd5900d34444d5d817319a4b82173fe"}
+{"at": "2026-09-22T15:47:13.054146+00:00", "event": "model_decision", "step": 0, "action": "fill", "control": "c_67753db522_0", "input_ref": "member_id", "reason_code": "locate_record", "model": "qwen3.5:2b", "digest": "324d162be6ca5629ae4517c8710434d0bd2d665bc94dbad46e9af8fbf8a2f0df", "duration_ms": 13606, "output_tokens": 52, "response_sha256": "fb12b68add6da827ed1bf6c9db4f6348874d8732ae9f36a8b4fc748747495824"}
+{"at": "2026-09-22T15:47:13.600027+00:00", "event": "action_completed", "step": 0, "action": "fill", "target": {"kind": "label", "name": "Member ID", "role": null, "frame": "Member workspace"}, "input_ref": "member_id"}
+{"at": "2026-09-22T15:47:17.726553+00:00", "event": "abort_requested", "step": 1}
+{"at": "2026-09-22T15:47:17.738018+00:00", "event": "run_finished", "step": 1, "status": "failure", "code": "operator_aborted", "model_calls": 2, "output_fields": [], "recoveries": 0, "handoffs": 0}
